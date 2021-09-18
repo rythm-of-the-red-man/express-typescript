@@ -24,9 +24,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 logger.stream = {
-  write: (message) => {
+  write: (message:string) => {
     logger.info(message.trim());
   },
 };
 
-module.exports = logger;
+export default logger;

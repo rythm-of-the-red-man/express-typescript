@@ -1,23 +1,33 @@
-const express = require('express');
-const validate = require('express-validation');
-const controller = require('../../controllers/user.controller');
-const { authorize, ADMIN, LOGGED_USER } = require('../../middlewares/auth');
-const {
+import express from "express";
+import validate from "express-validation";
+import {
+  load as loadController,
+  list as listController,
+  create as createController,
+  loggedIn as loggedInController,
+  get as getController,
+  replace as replaceController,
+  remove as removeController,
+  update as updateController,
+} from "../../controllers/user.controller";
+import { authorize } from "../../middlewares/auth";
+import { UserRoles } from "../../models/user.model";
+import {
   listUsers,
   createUser,
   replaceUser,
   updateUser,
-} = require('../../validations/user.validation');
+} from "../../validations/user.validation";
 
 const router = express.Router();
 
 /**
  * Load user when API with userId route parameter is hit
  */
-router.param('userId', controller.load);
+router.param("userId", loadController);
 
 router
-  .route('/')
+  .route("/")
   /**
    * @api {get} v1/users List Users
    * @apiDescription Get a list of users
@@ -39,7 +49,7 @@ router
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
    * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .get(authorize(ADMIN), validate(listUsers), controller.list)
+  .get(authorize(UserRoles.admin), validate(listUsers), listController)
   /**
    * @api {post} v1/users Create User
    * @apiDescription Create a new user
@@ -65,10 +75,10 @@ router
    * @apiError (Unauthorized 401)  Unauthorized     Only authenticated users can create the data
    * @apiError (Forbidden 403)     Forbidden        Only admins can create the data
    */
-  .post(authorize(ADMIN), validate(createUser), controller.create);
+  .post(authorize(UserRoles.admin), validate(createUser), createController);
 
 router
-  .route('/profile')
+  .route("/profile")
   /**
    * @api {get} v1/users/profile User Profile
    * @apiDescription Get logged in user profile information
@@ -87,10 +97,10 @@ router
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated Users can access the data
    */
-  .get(authorize(), controller.loggedIn);
+  .get(authorize(), loggedInController);
 
 router
-  .route('/:userId')
+  .route("/:userId")
   /**
    * @api {get} v1/users/:id Get User
    * @apiDescription Get user information
@@ -111,7 +121,7 @@ router
    * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can access the data
    * @apiError (Not Found 404)    NotFound     User does not exist
    */
-  .get(authorize(LOGGED_USER), controller.get)
+  .get(authorize(UserRoles.logged_user), getController)
   /**
    * @api {put} v1/users/:id Replace User
    * @apiDescription Replace the whole user document with a new one
@@ -139,7 +149,11 @@ router
    * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can modify the data
    * @apiError (Not Found 404)    NotFound     User does not exist
    */
-  .put(authorize(LOGGED_USER), validate(replaceUser), controller.replace)
+  .put(
+    authorize(UserRoles.logged_user),
+    validate(replaceUser),
+    replaceController
+  )
   /**
    * @api {patch} v1/users/:id Update User
    * @apiDescription Update some fields of a user document
@@ -167,7 +181,11 @@ router
    * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can modify the data
    * @apiError (Not Found 404)    NotFound     User does not exist
    */
-  .patch(authorize(LOGGED_USER), validate(updateUser), controller.update)
+  .patch(
+    authorize(UserRoles.logged_user),
+    validate(updateUser),
+    updateController
+  )
   /**
    * @api {patch} v1/users/:id Delete User
    * @apiDescription Delete a user
@@ -184,6 +202,6 @@ router
    * @apiError (Forbidden 403)    Forbidden     Only user with same id or admins can delete the data
    * @apiError (Not Found 404)    NotFound      User does not exist
    */
-  .delete(authorize(LOGGED_USER), controller.remove);
+  .delete(authorize(UserRoles.logged_user), removeController);
 
-module.exports = router;
+export default router;

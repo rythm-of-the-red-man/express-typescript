@@ -1,5 +1,5 @@
-const httpStatus = require('http-status');
-const ExtendableError = require('./extandable-error');
+import httpStatus from "http-status";
+import ExtendableError, { errorParams } from "./extandable-error";
 
 /**
  * Class representing an API error.
@@ -18,11 +18,15 @@ class APIError extends ExtendableError {
     stack,
     status = httpStatus.INTERNAL_SERVER_ERROR,
     isPublic = false,
-  }) {
+  }: errorParams) {
     super({
-      message, errors, status, isPublic, stack,
+      message,
+      errors,
+      status,
+      isPublic,
+      stack,
     });
   }
 }
 
-module.exports = APIError;
+export default APIError;
