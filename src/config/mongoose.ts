@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Connection } from "mongoose";
 import logger from "./logger";
 import { mongo, env } from "./vars";
 
@@ -17,7 +17,7 @@ if (env === "development") {
 }
 
 const connection = {
-  connect: () => {
+  connect: ():Connection => {
     mongoose
       .connect(mongo.uri || '', {
         useCreateIndex: true,

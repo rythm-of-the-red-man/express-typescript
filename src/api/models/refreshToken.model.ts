@@ -1,23 +1,23 @@
-import mongoose, { Model, ObjectId, Schema } from "mongoose";
+import mongoose, { Document, Model, ObjectId } from "mongoose";
 import crypto from "crypto";
 import moment from "moment-timezone";
 
-interface RefreshToken {
+export interface RefreshTokenDocument extends Document {
   token: string;
   userId: ObjectId;
   userEmail: string;
   expires: Date;
 }
 
-interface RefreshTokenMethods {
-  generate: (user: any) => RefreshToken;
+interface RefreshTokenModel extends Model<RefreshTokenDocument>{
+  generate: (user: any) => RefreshTokenDocument;
 }
 
 /**
  * Refresh Token Schema
  * @private
  */
-const refreshTokenSchema = new mongoose.Schema<RefreshToken>({
+const refreshTokenSchema = new mongoose.Schema<RefreshTokenDocument, RefreshTokenModel>({
   token: {
     type: String,
     required: true,
@@ -43,7 +43,7 @@ refreshTokenSchema.statics = {
    * @param {User} user
    * @returns {RefreshToken}
    */
-  generate(user): RefreshToken {
+  generate(user): RefreshTokenDocument {
     const userId = user._id;
     const userEmail = user.email;
     const token = `${userId}.${crypto.randomBytes(40).toString("hex")}`;
@@ -62,7 +62,7 @@ refreshTokenSchema.statics = {
 /**
  * @typedef RefreshToken
  */
-const RefreshToken = mongoose.model<RefreshToken, any, RefreshTokenMethods>(
+const RefreshToken = mongoose.model<RefreshTokenDocument, RefreshTokenModel>(
   "RefreshToken",
   refreshTokenSchema
 );

@@ -28,7 +28,7 @@ transporter.verify((error) => {
 const sendPasswordReset = async (passwordResetObject:{
   userEmail:string;
   resetToken:string;
-}) => {
+}): Promise<void> => {
   const email = new Email({
     views: { root: __dirname },
     message: {
@@ -55,7 +55,7 @@ const sendPasswordReset = async (passwordResetObject:{
     .catch(() => console.log('error sending password reset email'));
 };
 
-const sendPasswordChangeEmail = async (user:UserDocument) => {
+const sendPasswordChangeEmail = async (user:UserDocument): Promise<void> => {
   const email = new Email({
     views: { root: __dirname },
     message: {

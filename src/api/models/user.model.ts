@@ -1,4 +1,4 @@
-import mongoose, { Model, ObjectId, Document } from "mongoose";
+import mongoose, { Model, Document } from "mongoose";
 import httpStatus from "http-status";
 import { omitBy, isNil } from "lodash";
 import bcrypt from "bcryptjs";
@@ -9,7 +9,7 @@ import uuidv4 from "uuid/v4";
 import APIError from "../errors/api-error";
 import { env, jwtSecret, jwtExpirationInterval } from "../../config/vars";
 import { errorParams } from "../errors/extandable-error";
-import RefreshToken from "./refreshToken.model";
+import RefreshToken, {RefreshTokenDocument} from "./refreshToken.model";
 
 export interface UserDocument extends Document {
   email: string;
@@ -26,7 +26,7 @@ export interface UserDocument extends Document {
   findAndGenerateToken: (options: {
     email: string;
     password?: string;
-    refreshObject: RefreshToken;
+    refreshObject: RefreshTokenDocument;
   }) => Promise<{ user: UserDocument | null; accessToken: string }>;
   list: (
     page: string,
@@ -53,7 +53,7 @@ export interface UserModel extends Model<UserDocument> {
   findAndGenerateToken: (options: {
     email: string;
     password?: string;
-    refreshObject: RefreshToken;
+    refreshObject: RefreshTokenDocument;
   }) => Promise<{ user: UserDocument | null; accessToken: string }>;
   list: (
     page: string,
@@ -215,7 +215,7 @@ userSchema.statics = {
   async findAndGenerateToken(options: {
     email: string;
     password?: string;
-    refreshObject: RefreshToken;
+    refreshObject: RefreshTokenDocument;
   }): Promise<{ user: UserDocument | null; accessToken: string }> {
     const { email, password, refreshObject } = options;
     if (!email)

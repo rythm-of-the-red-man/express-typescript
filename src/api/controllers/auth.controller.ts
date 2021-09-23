@@ -7,13 +7,19 @@ import PasswordResetToken from "../models/passwordResetToken.model";
 import { jwtExpirationInterval } from "../../config/vars";
 import APIError from "../errors/api-error";
 import emailProvider from "../services/emails/emailProvider";
-import {  NextFunction, Response, Request } from "express";
+import { NextFunction, Response, Request } from "express";
 import { errorParams } from "../errors/extandable-error";
+import {Moment} from "moment-timezone"
 /**
  * Returns a formated object with tokens
  * @private
  */
-function generateTokenResponse(user: UserDocument, accessToken: string) {
+function generateTokenResponse(user: UserDocument, accessToken: string):{
+  tokenType:"Bearer";
+  accessToken:string;
+  refreshToken:string;
+  expiresIn:Moment
+} {
   const tokenType = "Bearer";
   const refreshToken = RefreshToken.generate(user).token;
   const expiresIn = moment().add(jwtExpirationInterval, "minutes");
@@ -25,11 +31,19 @@ function generateTokenResponse(user: UserDocument, accessToken: string) {
   };
 }
 
+interface authResponse {
+  token: string;
+  user: UserDocument;
+}
 /**
  * Returns jwt token if registration was successful
  * @public
  */
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response<authResponse> | void> => {
   try {
     const userData = omit(req.body, "role");
     const user = await new User(userData).save();
@@ -46,7 +60,11 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
  * Returns jwt token if valid username and password is provided
  * @public
  */
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response<authResponse> | void> => {
   try {
     const { user, accessToken } = await User.findAndGenerateToken(req.body);
     if (user) {
@@ -64,17 +82,19 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
  * Returns jwt token
  * @public
  */
-export const oAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const oAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response<authResponse> | void> => {
   try {
     const { user } = req;
-    if (user){
-
-    const accessToken = user.token();
-    const token = generateTokenResponse(user, accessToken);
-    const userTransformed = user.transform();
-    return res.json({ token, user: userTransformed });
-  }
-
+    if (user) {
+      const accessToken = user.token();
+      const token = generateTokenResponse(user, accessToken);
+      const userTransformed = user.transform();
+      return res.json({ token, user: userTransformed });
+    }
   } catch (error) {
     return next(error);
   }
@@ -84,21 +104,27 @@ export const oAuth = async (req: Request, res: Response, next: NextFunction) => 
  * Returns a new jwt when given a valid refresh token
  * @public
  */
-export const refresh = async (req: Request, res: Response, next: NextFunction) => {
+export const refresh = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response<authResponse> | void> => {
   try {
     const { email, refreshToken } = req.body;
     const refreshObject = await RefreshToken.findOneAndRemove({
       userEmail: email,
       token: refreshToken,
     });
+    if(refreshObject){
     const { user, accessToken } = await User.findAndGenerateToken({
       email,
       refreshObject,
     });
-    if (user){
+    if (user) {
       const response = generateTokenResponse(user, accessToken);
       return res.json(response);
     }
+  }
   } catch (error) {
     return next(error);
   }
@@ -108,13 +134,12 @@ export const sendPasswordReset = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+):Promise<Response | void> => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email }).exec();
 
     if (user) {
-      //@ts-ignore
       const passwordResetObj = await PasswordResetToken.generate(user);
       emailProvider.sendPasswordReset(passwordResetObj);
       res.status(httpStatus.OK);
@@ -133,7 +158,7 @@ export const resetPassword = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<Response | void> => {
   try {
     const { email, password, resetToken } = req.body;
     const resetTokenObject = await PasswordResetToken.findOneAndRemove({
@@ -141,10 +166,10 @@ export const resetPassword = async (
       resetToken,
     });
 
-    const err:errorParams = {
+    const err: errorParams = {
       status: httpStatus.UNAUTHORIZED,
       isPublic: true,
-      message:'',
+      message: "",
     };
     if (!resetTokenObject) {
       err.message = "Cannot find matching reset token";
@@ -158,11 +183,11 @@ export const resetPassword = async (
     const user = await User.findOne({
       email: resetTokenObject.userEmail,
     }).exec();
-    if(user){
+    if (user) {
       user.password = password;
       await user.save();
       emailProvider.sendPasswordChangeEmail(user);
-  
+
       res.status(httpStatus.OK);
       return res.json("Password Updated");
     }

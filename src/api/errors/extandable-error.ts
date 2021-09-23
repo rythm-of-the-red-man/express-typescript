@@ -1,5 +1,3 @@
-import { string } from "joi";
-
 interface ExtendableErrorInterface extends Error {
   message: string;
   errors?: {
@@ -24,7 +22,7 @@ export type errorParams = {
   stack?: string;
 };
 class ExtendableError extends Error implements ExtendableErrorInterface {
-  errors: any[];
+  errors: { field: string; location: string; messages: string[]; }[];
   status: number;
   isPublic: boolean;
   isOperational: boolean;

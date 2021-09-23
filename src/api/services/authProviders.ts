@@ -2,7 +2,13 @@
 import axios from 'axios';
 import { Services } from '../models/user.model';
 
-const facebook = async (access_token:string) => {
+const facebook = async (access_token:string):Promise<{
+  service: Services;
+  picture:string;
+  id:string;
+  name:string;
+  email:string;
+}> => {
   const fields = 'id, name, email, picture';
   const url = 'https://graph.facebook.com/me';
   const params = { access_token, fields };
@@ -19,7 +25,13 @@ const facebook = async (access_token:string) => {
   };
 };
 
-const google = async (access_token:string) => {
+const google = async (access_token:string):Promise<{
+  service: Services;
+  picture:string;
+  id:string;
+  name:string;
+  email:string;
+}> => {
   const url = 'https://www.googleapis.com/oauth2/v3/userinfo';
   const params = { access_token };
   const response = await axios.get(url, { params });

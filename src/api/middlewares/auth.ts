@@ -1,15 +1,14 @@
 import httpStatus from "http-status";
 import passport from "passport";
-import User, { UserDocument, UserModel, UserRoles } from "../models/user.model";
+import { UserDocument, UserRoles } from "../models/user.model";
 import APIError from "../errors/api-error";
 import { NextFunction, Request, Response } from "express";
 
 
 const handleJWT =
-  (req: Request, res: Response, next: NextFunction, roles: any) =>
+  (req: Request, res: Response, next: NextFunction, roles: UserRoles) =>
   async (err: APIError, user: UserDocument, info: string) => {
     const error = err || info;
-    //@ts-ignore
     const logIn = Promise.promisify(req.logIn);
     const apiError = new APIError({
       message: error ? error.message : "Unauthorized",
@@ -45,11 +44,11 @@ const handleJWT =
 
 export const authorize =
   (roles?:UserRoles) =>
-  (req: Request, res: Response, next: NextFunction) =>
+  (req: Request, res: Response, next: NextFunction): void =>
     passport.authenticate(
       "jwt",
       { session: false },
-      handleJWT(req, res, next, roles)
+      handleJWT(req, res, next, roles as UserRoles)
     )(req, res, next);
 
 exports.oAuth = (service: string) =>
