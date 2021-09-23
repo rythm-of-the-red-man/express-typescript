@@ -1,10 +1,12 @@
 import path from "path";
-
+import {config} from "dotenv-safe"
 // import .env variables
-require("dotenv-safe").config({
-  path: path.join(__dirname, "../../.env"),
-  sample: path.join(__dirname, "../../.env.example"),
-});
+config(
+  {
+    path: path.join(__dirname, "../../.env"),
+    sample: path.join(__dirname, "../../.env.example"),
+  }
+)
 
 export const env = process.env.NODE_ENV;
 export const port = process.env.PORT;

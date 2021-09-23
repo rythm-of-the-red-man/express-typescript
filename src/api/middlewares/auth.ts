@@ -9,6 +9,7 @@ const handleJWT =
   (req: Request, res: Response, next: NextFunction, roles: UserRoles) =>
   async (err: APIError, user: UserDocument, info: string) => {
     const error = err || info;
+      //@ts-ignore
     const logIn = Promise.promisify(req.logIn);
     const apiError = new APIError({
       message: error ? error.message : "Unauthorized",
@@ -51,5 +52,5 @@ export const authorize =
       handleJWT(req, res, next, roles as UserRoles)
     )(req, res, next);
 
-exports.oAuth = (service: string) =>
+export const oAuth = (service: string) =>
   passport.authenticate(service, { session: false });

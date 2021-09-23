@@ -1,6 +1,7 @@
 import { NextFunction, Response, Request } from "express";
 import httpStatus from "http-status";
 import { omit } from "lodash";
+import { Error } from "mongoose";
 import User, { UserDocument, UserRoles } from "../models/user.model";
 declare global {
   namespace Express {
@@ -60,7 +61,7 @@ export const create = async (req: Request, res: Response, next: NextFunction): P
     res.status(httpStatus.CREATED);
     res.json(savedUser.transform());
   } catch (error) {
-    next(User.checkDuplicateEmail(error));
+    next(User.checkDuplicateEmail(error as Error));
   }
 };
 
@@ -81,7 +82,7 @@ export const replace = async (req: Request, res: Response, next: NextFunction): 
       res.json(savedUser.transform());
     }
   } catch (error) {
-    next(User.checkDuplicateEmail(error));
+    next(User.checkDuplicateEmail(error as Error));
   }
 };
 
@@ -97,7 +98,7 @@ export const update = (req: Request, res: Response, next: NextFunction): Promise
   return user
     .save()
     .then((savedUser) => res.json(savedUser.transform()))
-    .catch((e:unknown) => next(User.checkDuplicateEmail(e)));
+    .catch((e:unknown) => next(User.checkDuplicateEmail(e as Error)));
 };
 
 /**

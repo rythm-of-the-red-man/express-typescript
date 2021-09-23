@@ -1,6 +1,7 @@
 import mongoose, { Document, Model, ObjectId } from "mongoose";
 import crypto from "crypto";
 import moment from "moment-timezone";
+import { UserDocument } from "./user.model";
 
 export interface RefreshTokenDocument extends Document {
   token: string;
@@ -10,7 +11,7 @@ export interface RefreshTokenDocument extends Document {
 }
 
 interface RefreshTokenModel extends Model<RefreshTokenDocument>{
-  generate: (user: any) => RefreshTokenDocument;
+  generate: (user: UserDocument) => RefreshTokenDocument;
 }
 
 /**
@@ -43,7 +44,7 @@ refreshTokenSchema.statics = {
    * @param {User} user
    * @returns {RefreshToken}
    */
-  generate(user): RefreshTokenDocument {
+  generate(user:UserDocument): RefreshTokenDocument {
     const userId = user._id;
     const userEmail = user.email;
     const token = `${userId}.${crypto.randomBytes(40).toString("hex")}`;

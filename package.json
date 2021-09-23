@@ -65,6 +65,7 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/compression": "^1.7.2",
     "@types/cors": "^2.8.12",
+    "@types/dotenv-safe": "^8.1.2",
     "@types/email-templates": "^8.0.4",
     "@types/lodash": "^4.14.173",
     "@types/method-override": "^0.0.32",

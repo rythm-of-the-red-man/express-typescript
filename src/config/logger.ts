@@ -27,6 +27,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 logger.stream = {
+      //@ts-ignore
   write: (message:string):Logger => {
     return logger.info(message.trim());
   },

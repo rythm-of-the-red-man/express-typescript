@@ -1,5 +1,5 @@
 import express from "express";
-import validate from "express-validation";
+import {validate} from "express-validation";
 import {
   login as loginController,
   refresh as refreshController,
@@ -8,7 +8,7 @@ import {
   sendPasswordReset as sendPasswordResetController,
   oAuth as oAuthController,
 } from "../../controllers/auth.controller";
-const oAuthLogin = require("../../middlewares/auth").oAuth;
+import {oAuth as oAuthLogin} from "../../middlewares/auth"
 import {
   login,
   register,

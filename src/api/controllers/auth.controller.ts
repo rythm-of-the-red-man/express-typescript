@@ -10,6 +10,7 @@ import emailProvider from "../services/emails/emailProvider";
 import { NextFunction, Response, Request } from "express";
 import { errorParams } from "../errors/extandable-error";
 import {Moment} from "moment-timezone"
+import { Error } from "mongoose";
 /**
  * Returns a formated object with tokens
  * @private
@@ -52,7 +53,7 @@ export const register = async (
     res.status(httpStatus.CREATED);
     return res.json({ token, user: userTransformed });
   } catch (error) {
-    return next(User.checkDuplicateEmail(error));
+    return next(User.checkDuplicateEmail(error as Error));
   }
 };
 

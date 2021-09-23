@@ -1,4 +1,4 @@
-import mongoose, { Model, Document } from "mongoose";
+import mongoose, { Model, Document, Error } from "mongoose";
 import httpStatus from "http-status";
 import { omitBy, isNil } from "lodash";
 import bcrypt from "bcryptjs";
@@ -9,7 +9,7 @@ import uuidv4 from "uuid/v4";
 import APIError from "../errors/api-error";
 import { env, jwtSecret, jwtExpirationInterval } from "../../config/vars";
 import { errorParams } from "../errors/extandable-error";
-import RefreshToken, {RefreshTokenDocument} from "./refreshToken.model";
+import {RefreshTokenDocument} from "./refreshToken.model";
 
 export interface UserDocument extends Document {
   email: string;
@@ -35,7 +35,7 @@ export interface UserDocument extends Document {
     email: string,
     role: UserRoles
   ) => Promise<UserDocument[]>;
-  checkDuplicateEmail: (error:any) => any;
+  checkDuplicateEmail: (error:Error) => APIError|Error;
   oAuthLogin: (
     service: Services,
     id: string,
@@ -45,7 +45,7 @@ export interface UserDocument extends Document {
   getRoles: () => UserRoles;
   passwordMatches: (password: string) => boolean;
   token: () => string;
-  transform: ()=> any
+  transform: ()=> { [key: string]: string|UserDocument }
 }
 
 export interface UserModel extends Model<UserDocument> {
@@ -61,8 +61,8 @@ export interface UserModel extends Model<UserDocument> {
     name: string,
     email: string,
     role: UserRoles
-  ) => Promise<UserDocument[]>;
-  checkDuplicateEmail: (error:any) => any;
+  ) => Promise<UserDocument[]>;  
+  checkDuplicateEmail: (error:Error) => APIError|Error;
   oAuthLogin: (
     service: Services,
     id: string,
@@ -156,7 +156,7 @@ userSchema.pre("save", async function save(next) {
  */
 userSchema.method({
   transform() {
-    const transformed: { [key: string]: any } = {};
+    const transformed: { [key: string]: string|UserDocument } = {};
     const fields = ["id", "name", "email", "picture", "role", "createdAt"];
 
     fields.forEach((field: string) => {
@@ -255,8 +255,8 @@ userSchema.statics = {
    * @returns {Promise<User[]>}
    */
   async list(
-    page: number = 1,
-    perPage: number = 30,
+    page = 1,
+    perPage = 30,
     name: string,
     email: string,
     role: UserRoles
@@ -276,7 +276,8 @@ userSchema.statics = {
    * @param {Error} error
    * @returns {Error|APIError}
    */
-  checkDuplicateEmail(error: any) {
+  checkDuplicateEmail(error: Error):Error {
+    //@ts-ignore
     if (error.name === "MongoError" && error.code === 11000) {
       return new APIError({
         message: "Validation Error",
