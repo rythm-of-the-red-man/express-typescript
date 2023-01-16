@@ -678,9 +678,9 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-15.12.5.tgz"
 
 "@types/nodemailer@*", "@types/nodemailer@^6.4.4":
-  version "6.4.4"
-  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-6.4.4.tgz#c265f7e7a51df587597b3a49a023acaf0c741f4b"
-  integrity sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==
+  version "6.4.7"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-6.4.7.tgz#658f4bca47c1a895b1d7e054b3b54030a5e1f5e0"
+  integrity sha512-f5qCBGAn/f0qtRcd4SEn88c8Fp3Swct1731X4ryPKqS61/A3LmmzN8zaEz7hneJvpjFbUUgY7lru/B/7ODTazg==
   dependencies:
     "@types/node" "*"
 
@@ -4084,9 +4084,9 @@ nodemailer@6.6.3:
   resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.6.3.tgz#31fb53dd4d8ae16fc088a65cb9ffa8d928a69b48"
 
 nodemailer@^6.3.1, nodemailer@^6.6.3:
-  version "6.6.4"
-  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.6.4.tgz#7888b9817cbd59ac842b2b62fb99000cd873f117"
-  integrity sha512-7ZXmys0IIaX531apjP+m/w1YYX3LGToDeRGTrxaPPdWLPernM8ZM+2w6pYp1eNF6LJxbUbAN8KHmlGaFz/HqqQ==
+  version "6.9.0"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.9.0.tgz#a17488ff470ff9edf1bb31d9ec23079bc94f7dd3"
+  integrity sha512-jFaCEGTeT3E/m/5R2MHWiyQH3pSARECRUDM+1hokOYc3lQAAG7ASuy+2jIsYVf+RVa9zePopSQwKNVFH8DKUpA==
 
 nodemon@^2.0.1, nodemon@^2.0.4:
   version "2.0.7"
